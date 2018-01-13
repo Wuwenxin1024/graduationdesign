@@ -1,5 +1,11 @@
 package gzu.pojo;
 
+/**
+ * 用户表对应实体类
+ * 
+ * @author 吴文鑫
+ * 
+ */
 public class User {
 	private String id;
 	private String userName;
