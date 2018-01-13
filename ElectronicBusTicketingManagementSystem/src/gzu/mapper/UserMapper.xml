@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gzu.mapper.UserMapper">
+
+	<insert id="addUser" parameterType="gzu.pojo.User">
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select replace(uuid(),'-','') from dual
+		</selectKey>
+		INSERT INTO
+		user(id,userName,password,telephone,nickName,payPassword,integral)
+		VALUES(#{id},#{userName},#{password},#{telephone},#{nickName},#{payPassword},#{integral})
+	</insert>
+</mapper>

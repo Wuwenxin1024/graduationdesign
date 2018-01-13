@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd ">
+	<context:component-scan base-package="gzu" />
+	<mvc:annotation-driven>
+		<!-- 消息转换器 -->
+		<!-- 解决@ResponseBody中文乱码 -->
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes" value="text/html;charset=UTF-8" />
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="gzu.util.DateConverter" />
+			</list>
+		</property>
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="10485760000" />
+		<property name="maxInMemorySize" value="4096" />
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+
+	<!-- 静态资源解析 包括 ：js、css、img、plugins.. -->
+	<mvc:resources location="/resource/" mapping="/resource/**" />
+	<!-- springmvc 拦截器的配置 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<!-- 放行 -->
+			<mvc:exclude-mapping path="/resource/**" />
+			<mvc:exclude-mapping path="/user/register" />
+			<mvc:exclude-mapping path="/user/toRegister" />
+			<mvc:exclude-mapping path="/user/usernameCheck" />
+			<mvc:exclude-mapping path="/user/toUpdatePassword" />
+			<mvc:exclude-mapping path="/user/toLogin" />
+			<mvc:exclude-mapping path="/user/login" />
+			<mvc:exclude-mapping path="/user/toUserAccountAuthentication" />
+			<mvc:exclude-mapping path="/news/findNewsExpandById" />
+			<mvc:exclude-mapping path="/news/findNewsReturnIndex" />
+			<mvc:exclude-mapping path="/common/**" />
+			<mvc:exclude-mapping path="/agedCoupon/insertAgedCoupon" />
+			<mvc:exclude-mapping path="/common/toShop_right_sidebar" />
+			<mvc:exclude-mapping path="/common/toShop_left_sidebar" />
+			<mvc:exclude-mapping path="/shoppingCar/detailsShoppingCar" />
+			<mvc:exclude-mapping path="/shoppingCar/IndexDeleteShoppingCar" />
+			<mvc:exclude-mapping path="/common/toVariable_product" />
+			<mvc:exclude-mapping path="/common/toCoupon" />
+			<mvc:exclude-mapping path="/common/toShop_right_sidebar" />
+			<mvc:exclude-mapping path="/common/toCart" />
+			<mvc:exclude-mapping path="/variableProduct/toVariable_product" />
+			<mvc:exclude-mapping path="/MedicalInstruments/**" />
+			<mvc:exclude-mapping path="/user/userProtocol" />
+			<mvc:exclude-mapping path="/deals/todeals" />
+			<mvc:exclude-mapping path="/new_deals/tonew_deals" />
+			<mvc:exclude-mapping path="/group_buy/togroup_buy" />
+			<mvc:exclude-mapping path="/new_deals/*" />
+			<mvc:exclude-mapping path="/shopIndex/**" />
+			<mvc:exclude-mapping path="/reservation/**" />
+			<mvc:exclude-mapping path="/activityRegistration/**" />
+
+			<mvc:exclude-mapping path="/common/toApply_coupon" />
+			<mvc:exclude-mapping path="/shoppingCar/getIndexShoppingCarList" />
+			<mvc:exclude-mapping path="/coupon/*" />
+			<mvc:exclude-mapping path="/common/toWebsite_template" />
+			<mvc:exclude-mapping
+				path="/onlineParticipationInfo/userInsertOnlineParticipationInfo" />
+			<mvc:exclude-mapping path="/type/**" />
+			<mvc:exclude-mapping path="/activities/**" />
+			<mvc:exclude-mapping path="/common/toActivity_carousel" />
+			<mvc:exclude-mapping path="/common/toVedio_Details" />
+			<mvc:exclude-mapping path="/LeFortServiceController/**" />
+			<mvc:exclude-mapping path="/news/**" />
+			<mvc:exclude-mapping path="/videoComment/getVideoCommentByPagination" />
+			<mvc:exclude-mapping path="/videoComment/updatePraiseAmout" />
+			<mvc:exclude-mapping path="/videoComment/updateBelittleAmout" />
+			<mvc:exclude-mapping path="/userVedio/**"/>
+			<mvc:exclude-mapping path="/common/toHome_Data_Analysis" />
+			<bean class="com.brick.squad.interceptor.LoginInterceptor">
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<!-- 创建一个自定义的binder对象 -->
+	<bean id="myBinder"
+		class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+		<!-- 校验器配置在myBinder对象中 -->
+		<property name="validator" ref="validator" />
+	</bean>
+	<!-- 配置校验器 -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<property name="validationMessageSource" ref="validateSource" />
+	</bean>
+	<!-- 校验资源文件 -->
+	<bean id="validateSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<!-- 要配置资源文件 -->
+		<property name="basenames">
+			<list>
+				<value>classpath:validateMessage</value>
+			</list>
+		</property>
+	</bean>
+</beans>
